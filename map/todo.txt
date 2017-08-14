@@ -1,0 +1,24 @@
+tab 누를시
+	같은 tab : 무반응
+	다른 tab : 중도 모든 상황 취소(initWithIdx)
+
+정보수정
+	1.api 수정 요청
+	2.요청 완료시 tabs & index 정보 저장 후 해당 tab정보만 바꿈 (재오픈 x)
+
+정보삭제
+	1.api 삭제 요청
+	2.요청 완료시 tab에서 제거
+	3.map controller에서 잔여 data 제거
+
+
+위치수정 : (수정, 취소)기존의 tabs & index 정보 저장해놓고 drawing이 끝나면 다시 열어야 함.
+
+신규생성 : (저장)바로 신규 생성된 side 단일 tab open.
+	(취소)그냥 취소
+
+
+위치수정(marker, polygon) 신규생성 공통 : 사이드바 종료, drawing 시작
+	drawing 버튼 : 마커, 다각형, 수정완료, 취소
+	마커, 다각형 누를 시 기존 drawing 지우고 새로 생성 시작.
+	다각형 없는 상태에서 저장하면 다각형 없이.
