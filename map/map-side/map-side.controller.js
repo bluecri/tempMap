@@ -9,6 +9,7 @@
     /** @ngInject */
     function MapSideController(
         sideMapCommService,
+        CategoryMenuData,
         /*nMarkerTitleToKMarkerMappingObj, categoriesToKMarkerMappingObj, kMarkerStorageArr, kMarkersOnMap, CategoryMenuData, kMarkerData,*/ 
         $http, $httpParamSerializerJQLike, $mdDialog, $sessionStorage, $sce, $state, $rootScope, $scope)
     {
@@ -48,9 +49,9 @@
     	vm.resolvedKMarkerDataArr = sideMapCommService.kMarkerResolvedArr; //*********TODO
         vm.resolvedKMarkerDataArrTitles = [];
     	var kMarkerCategoriesArr = [];	//현재 kMarker의 카테고리 obj들
-
+        vm.tabIndex = 0;
     	vm.kMarkerTitle = "";	//title
-    	vm.categoryMenuData = [];	//카테고리 트리 구조 TODO
+    	vm.categoryMenuData = CategoryMenuData; //카테고리 트리 구조
     	vm.selectedCategories = [];	//표시할 seleceted categories
     	vm.wikiPath = '';
     	vm.bModifyMode = false;
@@ -59,6 +60,7 @@
     	//function
     	vm.printSelectedCategories = printSelectedCategories;
     	vm.init = init;
+        vm.initWithIdx = initWithIdx;
 
         window.setIFrameSize=setIFrameSize;
 
@@ -67,6 +69,7 @@
         $rootScope.$on('ToSide', function (event, args) {
             if(args.type == "bOpen"){
                 $scope.$apply(function() {
+                    vm.init();  //init all
                     vm.resolvedKMarkerDataArrTitles = [];
                     vm.resolvedKMarkerDataArr = sideMapCommService.kMarkerResolvedArr;
                     
@@ -74,7 +77,7 @@
                         vm.bSideOpen = false;
                         return;
                     }
-                    
+                    //vm.tabIndex = 0;
                     if(vm.resolvedKMarkerDataArr.length != 0){
                         for(var i = 0, ii = vm.resolvedKMarkerDataArr.length; i<ii; i++){
                             vm.resolvedKMarkerDataArrTitles.push(vm.resolvedKMarkerDataArr[i].getTitle());
@@ -90,10 +93,32 @@
                 });
                 
             }
+            //
+            else if(args.type == 'reOpen'){
+                $scope.$apply(function() {
+                    //vm.init();  //do not init
+                    //vm.resolvedKMarkerDataArrTitles = [];
+                    //vm.resolvedKMarkerDataArr = sideMapCommService.kMarkerResolvedArr;
+                    if(vm.resolvedKMarkerDataArr.length == 0){
+                        vm.bSideOpen = false;
+                        return;
+                    }
+                    //vm.tabIndex = 0;
+                    /*if(vm.resolvedKMarkerDataArr.length != 0){
+                        for(var i = 0, ii = vm.resolvedKMarkerDataArr.length; i<ii; i++){
+                            vm.resolvedKMarkerDataArrTitles.push(vm.resolvedKMarkerDataArr[i].getTitle());
+                            console.log(vm.resolvedKMarkerDataArr[i].getTitle());
+                        }
+                    }*/
+                    //finally open
+                    vm.bSideOpen = args.bOpen;
+                });
+            }
         });
 
     	//do stuff
-    	vm.init();	//init
+        //vm.init();
+    	vm.initWithIdx(0);	//init
 
 
 
@@ -120,26 +145,30 @@
     			else{
     				//comm을 위한 commKMarker
     				var forCommKMarker = new commKMarker(
-    					vm.resolvedKMarkerDataArr.getId(),
+    					vm.resolvedKMarkerDataArr[vm.tabIndex].getId(),
     					vm.kMarkerTitle,		//changed
     					{
-    						'lat' : vm.resolvedKMarkerDataArr.getPosition().lat,
-    						'lng' : vm.resolvedKMarkerDataArr.getPosition().lng
+    						'lat' : vm.resolvedKMarkerDataArr[vm.tabIndex].getPosition().lat,
+    						'lng' : vm.resolvedKMarkerDataArr[vm.tabIndex].getPosition().lng
     					},
     					vm.selectedCategories,	//changed
     					null,	//tagsArr	//changed
     					null	//region
     				);
-    				forCommKMarker.path = vm.resolvedKMarkerDataArr.getRegion();
+    				forCommKMarker.path = vm.resolvedKMarkerDataArr[vm.tabIndex].getRegion();
     				//putMarkerDetail(inData,kMarkerData, nMarkerTitleToKMarkerMappingObj, categoriesToKMarkerMappingObj);
     			}
     		}
     		else if(answer == 'delete'){
     			//성공시 deleteMarker()에서  $mdDialog.hide('delete') 호출됌.
     			//deleteMarker(inData,kMarkerData, nMarkerTitleToKMarkerMappingObj, categoriesToKMarkerMappingObj, kMarkerStorageArr, kMarkersOnMap);		
+
+                //vm.resolvedKMarkerDataArr[vm.tabIndex]를 delete.
+                
     		}
     		else if(answer == 'return'){
-    			vm.init();
+    			//vm.init();
+                vm.initWithIdx(vm.tabIndex);
     		}
     		
     	};
@@ -179,14 +208,27 @@
 	        return ret;
       	};
 
-      	function init(){
+        //초기화
+        function init(){
+            vm.resolvedKMarkerDataArr = sideMapCommService.kMarkerResolvedArr; //*********TODO
+            vm.resolvedKMarkerDataArrTitles = [];
+            kMarkerCategoriesArr = [];  //현재 kMarker의 카테고리 obj들
+            vm.tabIndex = 0;
+            vm.kMarkerTitle = "";   //title
+            vm.categoryMenuData = CategoryMenuData; //카테고리 트리 구조
+            vm.selectedCategories = []; //표시할 seleceted categories
+            vm.wikiPath = '';
+            vm.bModifyMode = false;
+            vm.bSideOpen = false;
+        }
+        //tabs의 idx로 init 합니다.
+      	function initWithIdx(idx){
             if(vm.resolvedKMarkerDataArr.length == 0){
                 return;
             }
-            vm.categoryMenuData = CategoryMenuData; //카테고리 트리 구조
 
-      		vm.kMarkerTitle = JSON.parse(JSON.stringify(vm.resolvedKMarkerDataArr.getTitle()));	//title
-      		kMarkerCategoriesArr = JSON.parse(JSON.stringify(vm.resolvedKMarkerDataArr.getCategoriesArr()));
+      		vm.kMarkerTitle = JSON.parse(JSON.stringify(vm.resolvedKMarkerDataArr[idx].getTitle()));	//title
+      		kMarkerCategoriesArr = JSON.parse(JSON.stringify(vm.resolvedKMarkerDataArr[idx].getCategoriesArr()));
       		vm.selectedCategories = [];	//표시할 seleceted categories
 	    	//카테고리의 title만 추가.
 	    	for(var i=0 ,ii = kMarkerCategoriesArr.length; i<ii; i++){
