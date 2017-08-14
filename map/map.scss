@@ -1,0 +1,38 @@
+#map {
+	.area {
+   	 	position: absolute;
+  	 	background: #fff;
+    	border: 1px solid #888;
+    	border-radius: 3px;
+    	font-size: 12px;
+    	top: -5px;
+    	left: 15px;
+    	padding:2px;
+	}
+
+	.info {
+    	font-size: 12px;
+    	padding: 5px;
+	}
+	.info .title {
+    	font-weight: bold;
+	}
+}
+
+.tags {
+        font-size: 12px;
+
+        .tag {
+            border-radius: 2px;
+            margin: 8px 4px 0 0;
+            padding: 3px 8px;
+            background-color: rgba(0, 0, 0, 0.08);
+
+            .tag-color {
+                width: 8px;
+                height: 8px;
+                margin-right: 8px;
+                border-radius: 50%;
+            }
+        }
+    }

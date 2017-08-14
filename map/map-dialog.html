@@ -1,0 +1,54 @@
+<md-dialog flex="70" flex-xs="90">
+  <form ng-cloak>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+      <!-- <h2> {{vm.clickName}} </h2> // 위키 제목 -->
+      <!--  <h2> Name of Area </h2>-->
+      <h2> {{clickName}} </h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="cancel()">
+          <md-icon md-font-icon="icon-close-circle-outline" class="icon"></md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+
+
+    <!-- iframe 이용 wiki page dialog -->
+    <!-- <md-dialog-content> 
+    <script>
+        document.getElementById("clickWiki").src = "http://fanatic1.iptime.org:8080/xwiki/bin/view/XWiki/";
+    </script>-->
+    
+      <iframe frameborder=" 0" id="domainframe" src= "{{clickUrl | trustAsResourceUrl}}" width="100%" height = "600px" scrolling="auto";></iframe> 
+     <!-- <iframe frameborder="0" id="clickWiki" src=" " width="500px" height = "400px" scrolling="auto";></iframe>-->
+    <!-- </md-dialog-content> -->
+
+    <md-dialog-content>
+    <div class="tags" layout="row" layout-align="start center" layout-wrap>
+      <div class="tag" layout="row" style="height:30px;" layout-align="start center" data-ng-repeat="tag in tags">
+        <div class="tag-label"> <p># {{tag.name}}</p></div>
+      </div>
+    </div>
+    </md-dialog-content>
+
+
+    <md-dialog-actions layout="row" flex>
+    <span flex></span>
+     <!-- <md-button ng-click= "movewiki()" ui-sref = "{{clickUrl | trustAsResourceUrl}}"> -->
+     <md-button ng-click= "movewiki()">
+        More on Wikipedia
+      </md-button>
+      <span flex></span>
+      
+      <md-button hide show-gt-xs ng-if="canMakeEvent == true" ng-click="answer('makeEvent')">
+        이벤트생성
+      </md-button>
+      <md-button hide show-gt-xs ng-click="answer('markerInfo')">
+        마커정보
+      </md-button>
+      <md-button ng-click="cancel()">
+        Cancel
+      </md-button>  
+    </md-dialog-actions>
+  </form>
+</md-dialog>
